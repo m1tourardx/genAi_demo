@@ -8,7 +8,6 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 from datetime import datetime, timedelta
 from typing import Union, Tuple
-sys.path.append(os.getcwd())  # noqa
 
 dir_database = os.path.join(os.getcwd(), 'database')
 
@@ -25,13 +24,6 @@ class limitEfficiency:
         limit = float(limit)
         return limit
 
-# class HXMInput(BaseModel):
-#     # limit: float = Field(
-#     #     default=90, description=f"This is the limit value for the thermal efficiency of the verified heat exchanger. If the user does not inform, the adopted value must be 90.")
-#     path: str = Field(default='/Users/mitoura/Desktop/LYB/program/data/',
-#                       description="Indicates the path to the data, always equal to '/Users/mitoura/Desktop/LYB/program/data/'.")
-#     # limit: float = Field(default=limitEfficiency().get_limit())
-
 
 class HXM(BaseTool):
     name = 'hxm_predict'
@@ -39,13 +31,10 @@ class HXM(BaseTool):
     # args_schema: Type[BaseModel] = HXMInput
 
     def _to_args_and_kwargs(self, tool_input: Union[str, Dict]) -> Tuple[Tuple, Dict]:
+        """ Este método é responsável por subsituir o método `to_args_and_kwargs` da classe `BaseTool` e é responsável por converter a entrada do usuário em uma tupla de argumentos e um dicionário de palavras-chave. Esta substituição é necessaria para que a tool possa ser executada sem a necessidade de argumentos de entrada."""
         return (), {}
 
-    def _run(self,
-             # limit: float,
-             # run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-             ):
-
+    def _run(self):
         # Aquisição do valor do limite de eficiência
         limit = limitEfficiency().get_value()
 
@@ -97,8 +86,5 @@ class HXM(BaseTool):
 
         return response
 
-    async def _arun(self,
-                    # limit: float,
-                    # run_manager: Optional[AsyncCallbackManagerForToolRun] = None) -> str:
-                    ):
+    async def _arun(self):
         raise NotImplementedError("QueryData does not support async.")
