@@ -15,7 +15,7 @@ dir_database = os.path.join(os.getcwd(), 'database')
 class limitEfficiency:
     def get_value(self):
         """Função para obter o valor do limite de eficiência do trocador de calor"""
-        sys.path.append(os.getcwd())  # noqa
+        sys.path.append(os.getcwd())  # nopep8
         from agent_handler import CustomAgent
 
         limit_info = CustomAgent().info_getter(query="whats the limit efficiency of the thermal exchanger?",

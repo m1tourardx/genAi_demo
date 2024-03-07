@@ -1,6 +1,6 @@
 import os
 import sys
-sys.path.append(os.getcwd())  # noqa
+sys.path.append(os.getcwd())  # nopep8
 import agent_handler
 
 agent = agent_handler.CustomAgent()
