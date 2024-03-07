@@ -17,6 +17,7 @@ class limitEfficiency:
         """Função para obter o valor do limite de eficiência do trocador de calor"""
         sys.path.append(os.getcwd())  # noqa
         from agent_handler import CustomAgent
+
         limit_info = CustomAgent().info_getter(query="whats the limit efficiency of the thermal exchanger?",
                                                instructions="Dont answer with a phrase, just the value")
         limit = limit_info.replace(
@@ -31,7 +32,7 @@ class HXM(BaseTool):
     # args_schema: Type[BaseModel] = HXMInput
 
     def _to_args_and_kwargs(self, tool_input: Union[str, Dict]) -> Tuple[Tuple, Dict]:
-        """ Este método é responsável por subsituir o método `to_args_and_kwargs` da classe `BaseTool` e é responsável por converter a entrada do usuário em uma tupla de argumentos e um dicionário de palavras-chave. Esta substituição é necessaria para que a tool possa ser executada sem a necessidade de argumentos de entrada."""
+        """ Este método é responsável por sobreescrever o método `to_args_and_kwargs` da classe `BaseTool` e é responsável por converter a entrada do usuário em uma tupla de argumentos em um dicionário de palavras-chave. Esta substituição é necessaria para que a tool possa ser executada sem a necessidade de argumentos de entrada."""
         return (), {}
 
     def _run(self):

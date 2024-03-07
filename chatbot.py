@@ -6,6 +6,7 @@ from agent_handler import CustomAgent
 
 
 def chat():
+    # Cria uma instância do agente executor
     agent_executor = CustomAgent().agent_exec()
 
     if "messages" not in st.session_state.keys():
