@@ -9,7 +9,7 @@ import os
 class CustomAgent:
     def __init__(self):
         load_dotenv(override=True)
-        self.OPENAI_KEY = os.getenv("OPEN_AI_KEY")
+        self.OPENAI_KEY = "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"
         self.llm = ChatOpenAI(api_key=self.OPENAI_KEY)
         self.agent_executor = None
 
