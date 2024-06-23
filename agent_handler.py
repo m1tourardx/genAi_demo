@@ -2,6 +2,7 @@ from tools import ContactorQuery, HeatQuery, HXM
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_openai.chat_models import AzureChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_tools_agent
 import os
 
@@ -9,9 +10,11 @@ import os
 class CustomAgent:
     def __init__(self):
         load_dotenv(override=True)
-        self.OPENAI_KEY = "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"
-        self.llm = ChatOpenAI(api_key=self.OPENAI_KEY)
-        self.agent_executor = None
+        self.llm = AzureChatOpenAI(openai_api_version="2023-07-01-preview",
+                           azure_endpoint=os.getenv("OPENAI_URL"),
+                           openai_api_key=os.getenv("OPEN_AI_KEY"),
+                           azure_deployment=os.getenv("OPENAI_DEPLOY"),
+                           temperature=0)
 
     def agent_exec(self):
         """Função responsável pela criação de uma instância para o agente executor.	
@@ -31,18 +34,3 @@ class CustomAgent:
                                        tools=tools, verbose=True)
         self.agent_executor = agent_executor
         return agent_executor
-
-    def info_getter(self, query: str, instructions: str = ""):
-        """Função para iniciar o agente executor em busca de informações específicas usando todas as tools disponíveis.
-        Args: query: str   ->  String com a pergunta a ser feita ao agente executor.
-        Return: answer: str   ->  String com a resposta da pergunta feita ao agente executor."""
-
-        if not self.agent_executor:
-            self.agent_exec()
-
-        query = instructions + "." + query
-        answer = self.agent_executor.invoke(
-            {"input": query})
-        answer = answer['output']
-
-        return answer
