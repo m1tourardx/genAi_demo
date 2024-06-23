@@ -9,31 +9,15 @@ dir_database = os.path.join(os.getcwd(), 'database')
 
 
 class ContactorInput(BaseModel):
-    info = """
-            variables:{
-            "Dew Point":{
-                "description": "Natural Gas DewPoint.",
-                "unit":"°C"
-            },
-            "Contactor Pressure":{
-                "description": "Contactor tower pressure.",
-                "unit":"bar"
-            },
-            "Natural Gas Moisture":{
-                "description": "Natural Gas Moisture or water content in natural gas.",
-                "unit":"lbm/MMscf"
-            },
-            "Contactor Temperature":{
-                "description": "Contactor Tower temperature.",
-                "unit":"°C"
-            },
-            "Glycol Moisture":{
-                "description": "Glycol moisture in contactor tower input.",
-                "unit":" % v/v"
-            }
-            }
-           """
-    variables: List = Field(..., description=f"Here we need to insert a variables to verify.  To Natural Gas Dew Point, the variable is “Dew Point” in °C. To Contactor tower pressure, the variable is “Contactor Pressure” in bar. To Contactor Tower temperature, the variable is “Contactor Temperature” in °C. To Glycol moisture in contactor tower input, the variable is “Glycol Moisture” in % v/v.")
+    variables: List = Field(..., description="""
+    Here we need to select a variables to verify.
+    To Natural Gas Dew Point, the variable is “Dew Point” in °C. 
+    To Contactor tower pressure, the variable is “Contactor Pressure” in bar. 
+    To Contactor Tower temperature, the variable is “Contactor Temperature” in °C. 
+    To Glycol moisture in contactor tower input, the variable is “Glycol Moisture” in % v/v.
+    To Natural Gas mosture in contactor tower output, the variable is "Natural Gas Moisture" in lbm/MMscf.
+    To Glycol Level, the variable is "Glycol Level" in %.
+    """)
 
 
 class ContactorQuery(BaseTool):
@@ -45,17 +29,47 @@ class ContactorQuery(BaseTool):
              variables: List[str],
              path: str = os.path.join(dir_database, 'contactor_tower.csv'),
              run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """
-        data_sources: A list of file names or paths to datasets.
-        path: Data path, always equal to 'database/'.
-        variables: A dictionary where keys are the names of paths and values are lists of variables.
-        """
-        print(variables)
+
         df = pd.read_csv(path, index_col="Timestamp",
                          parse_dates=["Timestamp"])
         df_filtered = df[variables]
+        summary = {}
 
-        return df_filtered.to_string(index=False)
+        for variable in variables:
+            max_value = df_filtered[variable].max()
+            max_dates = df_filtered[df_filtered[variable] == max_value].index
+
+            min_value = df_filtered[variable].min()
+            min_dates = df_filtered[df_filtered[variable] == min_value].index
+
+            mean_value = df_filtered[variable].mean()
+            mean_dates = df_filtered[df_filtered[variable] == mean_value].index
+
+            last_value = df_filtered[variable].iloc[-1]
+            last_date = df_filtered.index[-1]
+
+            summary[variable] = {
+                "max_value": max_value,
+                "max_dates": max_dates,
+                "min_value": min_value,
+                "min_dates": min_dates,
+                "mean_value": mean_value,
+                "mean_dates": mean_dates,
+                "last_value": last_value,
+                "last_date": last_date
+            }
+
+        summary_text = ""
+        for variable, stats in summary.items():
+            summary_text += (
+                f"Variable: {variable}\n"
+                f"Maximum Value: {stats['max_value']} (Dates: {', '.join(map(str, stats['max_dates']))})\n"
+                f"Minimum Value: {stats['min_value']} (Dates: {', '.join(map(str, stats['min_dates']))})\n"
+                f"Mean Value: {stats['mean_value']} (Dates: {', '.join(map(str, stats['mean_dates']))})\n"
+                f"Last Value: {stats['last_value']} (Date: {stats['last_date']})\n\n"
+            )
+
+        return summary_text
 
     async def _arun(self,
                     variables: Dict[str, List[str]],

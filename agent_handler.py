@@ -1,4 +1,4 @@
-from tools import ContactorQuery, HeatQuery, DocumentQuery, HXM
+from tools import ContactorQuery, HeatQuery, HXM
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -17,13 +17,16 @@ class CustomAgent:
         """Função responsável pela criação de uma instância para o agente executor.	
         Args: additional_instructions (Opcional): str   ->  String com instruções adicionais para o template do agente executor.
         Return: agent_executor: AgentExecutor   ->  Retorna uma instância do agente executor"""
-
+        with open('./docs/refs.txt', 'r', encoding='utf-8') as file:
+            content = file.read()
         prompt = ChatPromptTemplate.from_messages([
-            ('system', f'''You serve as an assistant. You shoud always call available tools before any other action. Call DocumentQuery() first using whole prompt as input for this function.'''), MessagesPlaceholder(
+            ('system', f'''You serve as an assistant, you name is RAi, you are a Radix chatbot. Use this informations as context {content}.
+                           If the user asks about external information, answer based on your knowledge.
+                           If the user asks for information related to Reboiler variables, say "I am not allowed to check information about Reboiler variables."'''), MessagesPlaceholder(
                 variable_name='char_history', optional=True),
             ('user', '{input}'), MessagesPlaceholder(variable_name="agent_scratchpad")])
 
-        tools = [ContactorQuery(), HeatQuery(), DocumentQuery(), HXM()]
+        tools = [ContactorQuery(), HeatQuery(), HXM()]
         agent_executor = AgentExecutor(agent=create_openai_tools_agent(llm=self.llm, tools=tools, prompt=prompt),
                                        tools=tools, verbose=True)
         self.agent_executor = agent_executor

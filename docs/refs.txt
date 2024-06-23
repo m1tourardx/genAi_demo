@@ -1,0 +1,29 @@
+About the themal efficiency limits of the heat exchanger
+Limit: 91%
+Standard of Excellence for Gas Dehydration Processes with TEG 
+1. Basic conformation of TEG processes:
+In a simplified way, a gas dehydration process with TEG is essentially composed of: 
+1. Contactor tower
+2. Reboiler
+3. Stripping Tower
+4. Stahl column (Sparger column)
+5. Flash vessel (Expansion vessel)
+6. TEG surge drum
+7. Cartridge and activated carbon filters
+8. Circulation Pumps
+9. Heat exchangers
+The wet gas at the system inlet is first directed to a gas scrubber and/or coalescing filter to prevent the admission of entrained liquid into the Contactor Tower. The main undesirable consequence of this liquid carryover would be the risk of foam formation with consequent severe loss of glycol. Another consequence would be the entry of liquid hydrocarbons into the glycol system, which, depending on the molecular weight, could cause loss of temperature and/or coking in the reboiler. 
+In the tower, the gas is dehydrated through contact with lean TEG (concentrated glycol) and the humidity of the gas at the top of the tower is specified according to the requirements of each project. Lower temperatures of the wet gas entering the tower facilitate dehydration and enable the achievement of lower moisture levels in the treated gas. Before leaving the tower, the dehydrated gas passes through a demister, in order to reduce the loss of glycol. 
+The regenerated glycol (lean TEG) is cooled to a suitable temperature before entering the Contactor Tower, generally between 5 and 10°C above the wet gas inlet temperature, avoiding condensation of heavy gas.
+The rich glycol (lean glycol + water removed from the gas) from the bottom of the Contactor Tower is directed through a level control valve (whose pressure difference is accentuated, as gas dehydration occurs at high pressure and glycol regeneration must occur at the lowest pressure possible), to a coil at the top of the Stripping Tower, where it is pre-heated, while functioning as a top condenser, generating the reflux of this tower. The pre-heated rich glycol also undergoes additional heating in the Cold TEG x TEG exchanger, before entering the Expansion Vessel. The function of the Expansion Vessel is to separate hydrocarbons that may be dissolved in the glycol during its stay in the Contactor Tower. 
+Light hydrocarbons, if present, are sent as gas to the torch and heavier liquid hydrocarbons are separated from the rich TEG and directed to drainage.
+The rich TEG that leaves the Expansion Vessel goes to filters with the aim of removing solids and organic compounds dissolved in the glycol. The first cartridge filter receives all of the rich TEG flow and removes solids from the glycol. Part of the rich TEG that leaves this first filter (10-20%) is directed to an activated carbon filter where dissolved organics are removed. A second smaller cartridge filter, downstream of the activated carbon filter, is used to prevent the carryover of carbon fines to subsequent equipment. The rich glycol stream that leaves this filter joins the rest of the glycol coming from the first cartridge filter, passes through the Hot TEG x TEG Exchanger, where it is heated by the lean TEG that leaves the Stahl Column, and goes to regeneration in the Refervector .
+The rich TEG enters the Refervector through the Stripping Tower and is regenerated to its original concentration (lean TEG) through electrical resistance heating. The maximum temperature of the Refervender is limited to 204 °C due to the degradation temperature of the TEG, thus limiting the maximum concentration achieved for the TEG.
+In order to increase the glycol concentration without additional temperature increase, a second regeneration step takes place in the Stahl Column, where the required concentration for lean TEG is achieved by desorption of water from the glycol with a stream of fuel gas. The lean glycol that leaves the column gives heat to the rich glycol in the Hot TEG x TEG and Cold TEG x TEG exchangers and goes to the Surge Vessel.
+From the vessel, the poor TEG is directed back to the Contactor Tower by the Circulation Pumps, after being cooled in the Lean TEG Cooler. The Surge Vessel works as a lung for the circulation pumps, is used to replace glycol in the system and also serves as a drainage vessel for the unit during maintenance operations. 
+Glycol replacement procedure
+The design of this unit has severe restrictions regarding the levels of glycol circulating in the process. The minimum circulating glycol level is 93% of the design value. Values below 93% of circulating glycol can cause increases in the humidity of the exiting natural gas and allow the formation of hydrates in critical flow conditions. When circulating glycol values are close to 93%, the procedure adopted must be as follows: 
+•	It must be estimated when the amount of circulating glycol will be close to 93%. 
+•	glycol must be added to make up for the amount lost throughout the process. 
+•	glycol must be added upstream of the glycol cooling heat exchanger. 
+•	The glycol to be added must have a minimum purity of 98.9% v.v. 

@@ -9,9 +9,6 @@ openai
 load_dotenv
 pandas
 pyarrow
-pinecone-client==2.2.4
-pypdf==3.17.4
-tiktoken==0.5.2
 numpy==1.24.3
-chromadb
 scikit-learn
+matplotlib

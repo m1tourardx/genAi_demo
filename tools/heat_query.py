@@ -9,30 +9,15 @@ dir_database = os.path.join(os.getcwd(), 'database')
 
 
 class HeatInput(BaseModel):
-    info = """
-            variables:{
-            "Water Inlet Temperature":{
-                "description": "Temperature of water inlet in heat exchanger.",
-                "unit":"°C"
-            },
-            "Glycol Inlet Temperature":{
-                "description": "Temperature of glycol inlet in heat exchanger.",
-                "unit":"°C"
-            },
-            "Out Glycol Temperature":{
-                "description": "Temperature of glycol outlet in heat exchanger.",
-                "unit":"°C"
-            },
-            "Out Water Temperature":{
-                "description": "Temperature of water outlet in heat exchanger.",
-                "unit":"°C"
-            }
-           """
-    variables: List = Field(
-        ..., description=f"Here we need to insert a variables to verify.  Check {info} for more information and the name of variables presented in {info}.")
-    path: str = Field(default='/Users/mitoura/Desktop/LYB/program/data/',
-                      description="Indicates the path to the data, always equal to '/Users/mitoura/Desktop/LYB/program/data/'.")
 
+    variables: List = Field(
+        ..., description="""
+    Here we need to select a variables to verify.
+    To Water Inlet Temperature, the variable is “Water Inlet Temperature” in °C. 
+    To Glycol Inlet Temperature, the variable is “Glycol Inlet Temperature” in °C. 
+    To Out Glycol Temperature, the variable is “Out Glycol Temperature” in °C. 
+    To Out Water Temperature, the variable is “Out Water Temperature” in °C. 
+""")
 
 class HeatQuery(BaseTool):
     name = 'heat_query'
@@ -43,21 +28,49 @@ class HeatQuery(BaseTool):
              variables: List[str],
              path: str = os.path.join(dir_database, 'heat_exchanger.csv'),
              run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
-        """
-        data_sources: A list of file names or paths to datasets.
-        path: Data path, always equal to 'data/'.
-        variables: A dictionary where keys are the names of paths and values are lists of variables.
-        """
 
         df = pd.read_csv(path, index_col="Timestamp",
                          parse_dates=["Timestamp"])
-        print(variables)
         df_filtered = df[variables]
+        summary = {}
 
-        return df_filtered.to_string(index=False)
+        for variable in variables:
+            max_value = df_filtered[variable].max()
+            max_dates = df_filtered[df_filtered[variable] == max_value].index
+
+            min_value = df_filtered[variable].min()
+            min_dates = df_filtered[df_filtered[variable] == min_value].index
+
+            mean_value = df_filtered[variable].mean()
+            mean_dates = df_filtered[df_filtered[variable] == mean_value].index
+
+            last_value = df_filtered[variable].iloc[-1]
+            last_date = df_filtered.index[-1]
+
+            summary[variable] = {
+                "max_value": max_value,
+                "max_dates": max_dates,
+                "min_value": min_value,
+                "min_dates": min_dates,
+                "mean_value": mean_value,
+                "mean_dates": mean_dates,
+                "last_value": last_value,
+                "last_date": last_date
+            }
+
+        summary_text = ""
+        for variable, stats in summary.items():
+            summary_text += (
+                f"Variable: {variable}\n"
+                f"Maximum Value: {stats['max_value']} (Dates: {', '.join(map(str, stats['max_dates']))})\n"
+                f"Minimum Value: {stats['min_value']} (Dates: {', '.join(map(str, stats['min_dates']))})\n"
+                f"Mean Value: {stats['mean_value']} (Dates: {', '.join(map(str, stats['mean_dates']))})\n"
+                f"Last Value: {stats['last_value']} (Date: {stats['last_date']})\n\n"
+            )
+
+        return summary_text
 
     async def _arun(self,
                     variables: Dict[str, List[str]],
-                    path: str = '/Users/mitoura/Desktop/LYB/program/data/',
                     run_manager: Optional[AsyncCallbackManagerForToolRun] = None) -> str:
         raise NotImplementedError("QueryData does not support async.")
