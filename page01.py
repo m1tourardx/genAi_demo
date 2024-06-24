@@ -11,7 +11,7 @@ dir_database = os.path.join(os.getcwd(), 'database')
 dir_imgs = os.path.join(os.getcwd(), 'imgs')
 
 
-def third_page():
+def third_page(doc01, doc02, doc03):
     col1, col2 = st.columns([0.2, 0.8])
 
     with col1:
@@ -30,23 +30,23 @@ def third_page():
         equipament = st.selectbox("Choose the equipament:", equipament_TEG)
         if equipament == "Contactor Tower":
             vars = st.selectbox("Choose the variables:", vars_contactor)
-            data = os.path.join(dir_database, "contactor_tower.csv")
+            data = doc01
             image = Image.open(os.path.join(dir_imgs, "contactor.jpeg"))
             st.image(image)
 
         elif equipament == "Reboiler":
             vars = st.selectbox("Choose the variables:", vars_reboiler)
-            data = os.path.join(dir_database, "reboiler.csv")
+            data = doc02
             image = Image.open(os.path.join(dir_imgs, "reboiler.jpeg"))
             st.image(image)
         elif equipament == "HX01":
             vars = st.selectbox("Choose the variables:", vars_HX01)
-            data = os.path.join(dir_database, "heat_exchanger.csv")
+            data = doc03
             image = Image.open(os.path.join(dir_imgs, "hx.png"))
             st.image(image)
 
     with col2:
-        df = pd.read_csv(data)
+        df = data
         df['Timestamp'] = pd.to_datetime(df['Timestamp'])
         df.set_index('Timestamp', inplace=True)
         df.sort_index(inplace=True)

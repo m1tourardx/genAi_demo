@@ -4,11 +4,15 @@ from langchain.tools import BaseTool
 from typing import List, Dict, Type, Optional
 import pandas as pd
 import os
+from .date_time import convert_to_datetime
+from datetime import datetime, timedelta
 
 dir_database = os.path.join(os.getcwd(), 'database')
 
 
 class ContactorInput(BaseModel):
+    ts_start: str = Field(..., description="Identify the start time for data acquisition. Return informations in this format: %Y-%m-%dT%H:%M:%S.")
+    ts_end: str = Field(..., description="Identify the end time for data acquisition. Return informations in this format: %Y-%m-%dT%H:%M:%S.")
     variables: List = Field(..., description="""
     Here we need to select a variables to verify.
     To Natural Gas Dew Point, the variable is “Dew Point” in °C. 
@@ -26,12 +30,48 @@ class ContactorQuery(BaseTool):
     args_schema: Type[BaseModel] = ContactorInput
 
     def _run(self,
+             ts_start: str,
              variables: List[str],
+             ts_end: str = 'now',
              path: str = os.path.join(dir_database, 'contactor_tower.csv'),
              run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
 
-        df = pd.read_csv(path, index_col="Timestamp",
-                         parse_dates=["Timestamp"])
+        ts_start = convert_to_datetime(ts_start)
+        ts_end = convert_to_datetime(ts_end)
+
+        if ts_start == ts_end:
+            ts_start = ts_end - timedelta(days=3)
+
+
+        dir_database = os.path.join(os.getcwd(), 'database')
+        def update_timestamps_in_datasets(directory):
+            files = [f for f in os.listdir(directory) if f.endswith('.csv')]
+            reference_date = datetime.today().date()
+            
+            updated_datasets = {}
+
+            for file in files:
+                df = pd.read_csv(os.path.join(directory, file), parse_dates=["Timestamp"])
+                
+                last_timestamp = pd.to_datetime(df['Timestamp'].iloc[-1]).date()
+                days_diff = (reference_date - last_timestamp).days
+
+                df['Timestamp'] = pd.to_datetime(df['Timestamp']) + timedelta(days=days_diff)
+                df.set_index('Timestamp', inplace=True)
+                
+                updated_datasets[file] = df
+                
+            return updated_datasets
+
+        updated_datasets = update_timestamps_in_datasets(dir_database)
+        doc01 = updated_datasets.get('contactor_tower.csv')
+
+        df = doc01
+        df = df[(df.index >= ts_start) & (df.index <= ts_end)]
+        
+        if df.empty:
+            return "No data available for the given date range."
+        
         df_filtered = df[variables]
         summary = {}
 
@@ -43,7 +83,6 @@ class ContactorQuery(BaseTool):
             min_dates = df_filtered[df_filtered[variable] == min_value].index
 
             mean_value = df_filtered[variable].mean()
-            mean_dates = df_filtered[df_filtered[variable] == mean_value].index
 
             last_value = df_filtered[variable].iloc[-1]
             last_date = df_filtered.index[-1]
@@ -54,7 +93,6 @@ class ContactorQuery(BaseTool):
                 "min_value": min_value,
                 "min_dates": min_dates,
                 "mean_value": mean_value,
-                "mean_dates": mean_dates,
                 "last_value": last_value,
                 "last_date": last_date
             }
@@ -65,7 +103,7 @@ class ContactorQuery(BaseTool):
                 f"Variable: {variable}\n"
                 f"Maximum Value: {stats['max_value']} (Dates: {', '.join(map(str, stats['max_dates']))})\n"
                 f"Minimum Value: {stats['min_value']} (Dates: {', '.join(map(str, stats['min_dates']))})\n"
-                f"Mean Value: {stats['mean_value']} (Dates: {', '.join(map(str, stats['mean_dates']))})\n"
+                f"Mean Value: {stats['mean_value']})\n"
                 f"Last Value: {stats['last_value']} (Date: {stats['last_date']})\n\n"
             )
 
