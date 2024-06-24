@@ -10,6 +10,32 @@ from openai import OpenAI
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 import os
+from datetime import datetime, timedelta
+import pandas as pd
+
+dir_database = os.path.join(os.getcwd(), 'database')
+def update_timestamps_in_datasets(directory):
+    files = [f for f in os.listdir(directory) if f.endswith('.csv')]
+    reference_date = datetime.today().date()
+    
+    updated_datasets = {}
+
+    for file in files:
+        df = pd.read_csv(os.path.join(directory, file))
+        
+        last_timestamp = pd.to_datetime(df['Timestamp'].iloc[-1]).date()
+        days_diff = (reference_date - last_timestamp).days
+
+        df['Timestamp'] = pd.to_datetime(df['Timestamp']) + timedelta(days=days_diff)
+        
+        updated_datasets[file] = df
+        
+    return updated_datasets
+
+updated_datasets = update_timestamps_in_datasets(dir_database)
+doc01 = updated_datasets.get('contactor_tower.csv')
+doc02 = updated_datasets.get('reboiler.csv')
+doc03 = updated_datasets.get('heat_exchanger.csv')
 
 dir_imgs = os.path.join(os.getcwd(), 'imgs')
 
@@ -39,7 +65,7 @@ st.image(image, use_column_width=True)
 tab1, tab2, tab3, tab4, tab5 = st.tabs(
     ["Main", "Documents Database", "Application Catalog", "Architecture", "Natural Gas Dehydration Process"])
 with tab1:
-    third_page()
+    third_page(doc01, doc02, doc03)
 
 with tab2:
     second_page()

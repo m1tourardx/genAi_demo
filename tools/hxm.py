@@ -7,7 +7,6 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 from datetime import datetime, timedelta
 
-dir_database = os.path.join(os.getcwd(), 'database')
 
 class HXMInput(BaseModel):
     limit: float = Field(default=91, description="Limit value for heat efficiency of HX01. If the user does not specify a value for limit, adopt limit = 91.")
@@ -21,13 +20,33 @@ class HXM(BaseTool):
              limit: Optional[float] = None,
              run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
 
+        dir_database = os.path.join(os.getcwd(), 'database')
+        def update_timestamps_in_datasets(directory):
+            files = [f for f in os.listdir(directory) if f.endswith('.csv')]
+            reference_date = datetime.today().date()
+            
+            updated_datasets = {}
+
+            for file in files:
+                df = pd.read_csv(os.path.join(directory, file), parse_dates=["Timestamp"])
+                
+                last_timestamp = pd.to_datetime(df['Timestamp'].iloc[-1]).date()
+                days_diff = (reference_date - last_timestamp).days
+
+                df['Timestamp'] = pd.to_datetime(df['Timestamp']) + timedelta(days=days_diff)
+                df.set_index('Timestamp', inplace=True)
+                
+                updated_datasets[file] = df
+                
+            return updated_datasets
+
+        updated_datasets = update_timestamps_in_datasets(dir_database)
+        doc03 = updated_datasets.get('heat_exchanger.csv')
+
         if limit is None:
             limit = 91
-            
-        df = pd.read_csv(os.path.join(dir_database, 'heat_exchanger.csv'))
-        df['Timestamp'] = pd.to_datetime(df['Timestamp'])
-        df.set_index('Timestamp', inplace=True)
-        df.sort_index(inplace=True)
+        
+        df = doc03
 
         var = df['Heat Efficiency']
 
