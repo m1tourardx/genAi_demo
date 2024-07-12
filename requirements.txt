@@ -1,0 +1,7 @@
+openai
+pandas
+numpy
+streamlit
+plotly
+langchain
+langchain-openai
