@@ -1,14 +1,13 @@
 streamlit
 pandas
-numpy
+numpy==1.24.3
 plotly
 scipy
 langchain
 langchain-openai
 openai
-load_dotenv
-pandas
+python-dotenv
 pyarrow
-numpy==1.24.3
 scikit-learn
 matplotlib
+pydantic
