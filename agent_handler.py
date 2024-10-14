@@ -7,10 +7,9 @@ from langchain.agents import AgentExecutor, create_openai_tools_agent
 from datetime import datetime
 import os
 
-##
 class CustomAgent:
     def __init__(self):
-        load_dotenv(override=True)
+        load_dotenv()
         self.llm = AzureChatOpenAI(openai_api_version="2023-07-01-preview",
                            azure_endpoint=os.getenv("OPENAI_URL"),
                            openai_api_key=os.getenv("OPEN_AI_KEY"),
